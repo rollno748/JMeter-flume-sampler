@@ -1,4 +1,23 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package io.perfwise.flume.sampler;
+
+import java.nio.charset.StandardCharsets;
 
 import org.apache.jmeter.config.ConfigTestElement;
 import org.apache.jmeter.engine.util.ConfigMergabilityIndicator;
@@ -6,236 +25,14 @@ import org.apache.jmeter.samplers.Entry;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.samplers.Sampler;
 import org.apache.jmeter.testbeans.TestBean;
-import org.apache.jmeter.testelement.TestElement;
-import org.apache.jmeter.testelement.TestElementTraverser;
-import org.apache.jmeter.testelement.property.JMeterProperty;
-import org.apache.jmeter.testelement.property.PropertyIterator;
-import org.apache.jmeter.threads.JMeterContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FlumeSampler extends FlumeTestElement implements Sampler, TestBean, ConfigMergabilityIndicator {
 
 	
 	private static final long serialVersionUID = -2503797037225437773L;
-
-	public void addTestElement(TestElement child) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void clearTestElementChildren() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setProperty(String key, String value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setProperty(String key, String value, String dflt) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setProperty(String key, boolean value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setProperty(String key, boolean value, boolean dflt) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setProperty(String key, int value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setProperty(String key, int value, int dflt) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setProperty(String name, long value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setProperty(String name, long value, long dflt) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean isEnabled() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void setEnabled(boolean enabled) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean isRunningVersion() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isTemporary(JMeterProperty property) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void setTemporary(JMeterProperty property) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean getPropertyAsBoolean(String key) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean getPropertyAsBoolean(String key, boolean defaultValue) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public long getPropertyAsLong(String key) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public long getPropertyAsLong(String key, long defaultValue) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int getPropertyAsInt(String key) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int getPropertyAsInt(String key, int defaultValue) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public float getPropertyAsFloat(String key) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public double getPropertyAsDouble(String key) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public void setRunningVersion(boolean run) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void recoverRunningVersion() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void clear() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public String getPropertyAsString(String key) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getPropertyAsString(String key, String defaultValue) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setProperty(JMeterProperty property) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public JMeterProperty getProperty(String propName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public PropertyIterator propertyIterator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void removeProperty(String key) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void traverse(TestElementTraverser traverser) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public JMeterContext getThreadContext() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setThreadContext(JMeterContext threadContext) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public String getThreadName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setThreadName(String threadName) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean canRemove() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setName(String name) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public String getComment() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setComment(String comment) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean applies(ConfigTestElement configElement) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public SampleResult sample(Entry e) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	private static final Logger LOGGER = LoggerFactory.getLogger(FlumeSampler.class);
 
 	public void testStarted() {
 		// TODO Auto-generated method stub
@@ -257,4 +54,39 @@ public class FlumeSampler extends FlumeTestElement implements Sampler, TestBean,
 		
 	}
 
+	public boolean applies(ConfigTestElement configElement) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public SampleResult sample(Entry e) {
+		SampleResult result = new SampleResult();
+		result.setSampleLabel(getName());
+		//result.setSamplerData(request());
+		result.setDataType(SampleResult.TEXT);
+		result.setContentType("text/plain");
+		result.setDataEncoding(StandardCharsets.UTF_8.name());
+		
+		result.sampleStart();
+
+		try {
+			//publish(template, result);
+		} catch (Exception ex) {
+			LOGGER.info("Exception occurred while publishing message");
+			result = handleException(result, ex);
+		} finally {
+			result.sampleEnd();
+		}
+		return result;
+	}
+	
+	private SampleResult handleException(SampleResult result, Exception ex) {
+		result.setResponseMessage("Message Publish Error");
+		result.setResponseCode("500");
+		result.setResponseData(String.format("Error in publishing message to PubSub topic : %s", ex.toString()).getBytes());// PublisherConfig.getTopic()
+		result.setSuccessful(false);
+		return result;
+	}
+
+	
 }
