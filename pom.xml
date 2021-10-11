@@ -5,8 +5,20 @@
 	<groupId>io.perfwise.jmeter</groupId>
 	<artifactId>jmeter-flume-sampler</artifactId>
 	<version>0.1</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-	<properties>
+    <properties>
 		<jmeter-version>5.2.1</jmeter-version>
 		<jmeter.lib.scope>provided</jmeter.lib.scope>
 		<flume-sdk-version>1.9.0</flume-sdk-version>
