@@ -33,10 +33,12 @@ public class FlumeTestElementBeanInfoSupport extends BeanInfoSupport {
 		PropertyDescriptor propertyDescriptor = property("message", TypeEditor.TextAreaEditor);
 		propertyDescriptor.setValue(NOT_UNDEFINED, Boolean.TRUE);
 		propertyDescriptor.setValue(DEFAULT, "{\"demoMessage\":\"Hello World!\"}");
-
+		propertyDescriptor.setShortDescription("Message Content");
+		
 		propertyDescriptor = property("gzipCompression");
 		propertyDescriptor.setValue(NOT_UNDEFINED, Boolean.TRUE);
 		propertyDescriptor.setValue(DEFAULT, Boolean.FALSE);
+		propertyDescriptor.setDisplayName("Compression (GZIP)");
 	}
 
 }

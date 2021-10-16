@@ -18,104 +18,146 @@
 
 package io.perfwise.flume.config;
 
+import java.io.Serializable;
+import java.util.List;
 import java.util.Properties;
 
-import org.apache.flume.api.RpcClient;
-import org.apache.flume.api.RpcClientFactory;
 import org.apache.jmeter.config.ConfigElement;
+import org.apache.jmeter.config.ConfigTestElement;
 import org.apache.jmeter.testbeans.TestBean;
 import org.apache.jmeter.testbeans.TestBeanHelper;
-import org.apache.jmeter.testelement.AbstractTestElement;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.threads.JMeterVariables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlumeConfig extends AbstractTestElement implements ConfigElement, TestStateListener, TestBean {
+import io.perfwise.flume.utils.VariableSettings;
+
+public class FlumeConfig extends ConfigTestElement implements ConfigElement, TestBean, TestStateListener, Serializable {
 
 	private static final long serialVersionUID = 4057766664675197344L;
-
 	private static Logger LOGGER = LoggerFactory.getLogger(FlumeConfig.class);
-	private static RpcClient client = null;
-	private static int maxIOWorker = Runtime.getRuntime().availableProcessors() * 2;
 
-	private String[] hostsLists;
-	private String flumePort;
+	private transient String flumeAgentHosts;
+	private transient String clientTypeValue;
+	private transient String batchSize;
+	private transient String connectTimeout;
+	private transient String requestTimeout;
 
-	private String connectTimeout;
-	private String requestTimeout;
-	private String maxAttempts;
-	private String batchSize;
-	private String backOff;
-	private String maxBackOff;
-	private String clientType;
+	private List<VariableSettings> extraConfigs;
 
-	private static final String FlumeClient = "flumeClient";
+	private static final String FLUME_CLIENT = "flumeClient";
 
+	@Override
 	public void addConfigElement(ConfigElement config) {
-		// TODO Auto-generated method stub
 
 	}
 
-	public boolean expectsModification() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
+	@Override
 	public void testStarted() {
 		this.setRunningVersion(true);
 		TestBeanHelper.prepare(this);
 		JMeterVariables variables = getThreadContext().getVariables();
-
-		if (variables.getObject(FlumeClient) != null) {
-			LOGGER.error("Flume client connect is already established, Skipping client initiation");
+		
+//		String clientTypeVal = getClientTypeValue();
+//		int clientTypeInt = FlumeConfigBeanInfo.getClientTypeValueAsInt(clientTypeVal);
+//		
+//		switch (clientTypeInt) {
+//		
+//		case FlumeConfigBeanInfo.AVRO_RPC:
+//			LOGGER.info("AVRO RPC");
+//			break;
+//		case FlumeConfigBeanInfo.FAILOVER_RPC:
+//			LOGGER.info("FAILOVER RPC");
+//			break;
+//		case FlumeConfigBeanInfo.THRIFT_RPC:
+//			LOGGER.info("THRIFT RPC");
+//			break;
+//		case FlumeConfigBeanInfo.LOADBALANCING_RPC:
+//			LOGGER.info("LB RPC");
+//			break;
+//		case FlumeConfigBeanInfo.THRIFT_SECURERPC:
+//			LOGGER.info("THRIFT SECURE RPC");
+//			break;
+//		default:
+//			LOGGER.info("AVRO RPC");
+//			break;
+//		}
+		
+		
+		if (variables.getObject(FLUME_CLIENT) != null) {
+			LOGGER.error("Flume Client connection is already established..");
 		} else {
 			synchronized (this) {
-				client = RpcClientFactory.getInstance(getFlumeProperties());
-				LOGGER.info("Flume client successfully Initialized");
-				variables.putObject(FlumeClient, client);
-				LOGGER.info(String.format("Flume client %s has been successfully initialized !", clientType));
+				try {
+					Properties props = new Properties();
+
+					//props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, getKafkaBrokers());
+
+					LOGGER.debug("Additional Cofig Size::: " + getExtraConfigs().size());
+					if (getExtraConfigs().size() >= 1) {
+						LOGGER.info("Setting up Additional properties");
+						for (int i=0; i<getExtraConfigs().size(); i++) {
+							props.put(getExtraConfigs().get(i).getConfigKey(), getExtraConfigs().get(i).getConfigValue());
+							LOGGER.debug(String.format("Adding property : %s", getExtraConfigs().get(i).getConfigKey()));
+						}
+					}
+
+					//kafkaProducer = new KafkaProducer<String, Object>(props);
+
+					//variables.putObject(FLUME_CLIENT, FlumeClients.getClientObject(clientType));
+					LOGGER.info("Flume client successfully Initialized");
+				} catch (Exception e) {
+					LOGGER.error("Error occured while establishing connection with flume agents!!");
+					e.printStackTrace();
+				}
 			}
 		}
-
+		
 	}
 
-	private Properties getFlumeProperties() {
-		final Properties props = null;
-		return props;
-	}
-
+	@Override
 	public void testStarted(String host) {
-		// TODO Auto-generated method stub
+		testStarted();
 
 	}
 
+	@Override
 	public void testEnded() {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void testEnded(String host) {
-		// TODO Auto-generated method stub
+		testEnded();
 
 	}
 
-	// ===== Getters and Setters ====
+	// Getters and setters
 
-	public String[] getHostsLists() {
-		return hostsLists;
+	public String getFlumeAgentHosts() {
+		return flumeAgentHosts;
 	}
 
-	public void setHostsLists(String[] hostsLists) {
-		this.hostsLists = hostsLists;
+	public void setFlumeAgentHosts(String flumeAgentHosts) {
+		this.flumeAgentHosts = flumeAgentHosts;
 	}
 
-	public String getFlumePort() {
-		return flumePort;
+	public String getClientTypeValue() {
+		return clientTypeValue;
 	}
 
-	public void setFlumePort(String flumePort) {
-		this.flumePort = flumePort;
+	public void setClientTypeValue(String clientTypeValue) {
+		this.clientTypeValue = clientTypeValue;
+	}
+
+	public String getBatchSize() {
+		return batchSize;
+	}
+
+	public void setBatchSize(String batchSize) {
+		this.batchSize = batchSize;
 	}
 
 	public String getConnectTimeout() {
@@ -134,28 +176,12 @@ public class FlumeConfig extends AbstractTestElement implements ConfigElement, T
 		this.requestTimeout = requestTimeout;
 	}
 
-	public String getMaxAttempts() {
-		return maxAttempts;
+	public List<VariableSettings> getExtraConfigs() {
+		return extraConfigs;
 	}
 
-	public void setMaxAttempts(String maxAttempts) {
-		this.maxAttempts = maxAttempts;
-	}
-
-	public String getBatchSize() {
-		return batchSize;
-	}
-
-	public void setBatchSize(String batchSize) {
-		this.batchSize = batchSize;
-	}
-
-	public String getBackOff() {
-		return backOff;
-	}
-
-	public void setBackOff(String backOff) {
-		this.backOff = backOff;
+	public void setExtraConfigs(List<VariableSettings> extraConfigs) {
+		this.extraConfigs = extraConfigs;
 	}
 
 }
