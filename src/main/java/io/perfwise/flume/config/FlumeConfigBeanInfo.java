@@ -35,7 +35,7 @@ public class FlumeConfigBeanInfo extends BeanInfoSupport {
 		CLIENTTYPEVALUE_TAGS[THRIFT_RPC] = "clientTypeValue.thriftRpc";
 		CLIENTTYPEVALUE_TAGS[THRIFT_SECURERPC] = "clientTypeValue.thriftSecureRpc";
 		CLIENTTYPEVALUE_TAGS[FAILOVER_RPC] = "clientTypeValue.failoverRpc";
-		CLIENTTYPEVALUE_TAGS[LOADBALANCING_RPC] = "clientTypeValue.loadBalancingRpc";
+		CLIENTTYPEVALUE_TAGS[LOADBALANCING_RPC] = "clientTypeValue.loadbalancingRpc";
 	}
 
 
@@ -73,19 +73,14 @@ public class FlumeConfigBeanInfo extends BeanInfoSupport {
 		propDesc.setDisplayName("Request Timeout");
 		propDesc.setShortDescription("Request Setting for Connection");
 		
-		propDesc = property(CLIENTTYPE_VALUE);
+		propDesc = property(CLIENTTYPE_VALUE, TypeEditor.ComboStringEditor);
+		propDesc.setValue(RESOURCE_BUNDLE, getBeanDescriptor().getValue(RESOURCE_BUNDLE));
 		propDesc.setValue(NOT_UNDEFINED, Boolean.TRUE);
-		propDesc.setValue(DEFAULT, "avro_rpc");
-		propDesc.setDisplayName("Client Type");
-		propDesc.setShortDescription("Choose the Client Type");
-		
-//		propDesc = property(CLIENTTYPE_VALUE, TypeEditor.ComboStringEditor);
-//		propDesc.setValue(RESOURCE_BUNDLE, getBeanDescriptor().getValue(RESOURCE_BUNDLE));
-//		propDesc.setValue(NOT_UNDEFINED, Boolean.TRUE);
-//		propDesc.setValue(DEFAULT, CLIENTTYPEVALUE_TAGS[AVRO_RPC]);
-//		propDesc.setValue(NOT_OTHER, Boolean.FALSE);
-//		propDesc.setValue(NOT_EXPRESSION, Boolean.FALSE);
-//		propDesc.setValue(TAGS, CLIENTTYPEVALUE_TAGS);
+		propDesc.setValue(DEFAULT, CLIENTTYPEVALUE_TAGS[AVRO_RPC]);
+		propDesc.setValue(NOT_OTHER, Boolean.FALSE);
+		propDesc.setValue(NOT_EXPRESSION, Boolean.FALSE);
+		propDesc.setValue(TAGS, CLIENTTYPEVALUE_TAGS);
+
 
 		PropertyDescriptor configProps = property("extraConfigs", TypeEditor.TableEditor);
 		configProps.setValue(TableEditor.CLASSNAME, VariableSettings.class.getName());

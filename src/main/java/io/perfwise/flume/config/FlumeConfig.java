@@ -20,7 +20,6 @@ package io.perfwise.flume.config;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.jmeter.config.ConfigElement;
 import org.apache.jmeter.config.ConfigTestElement;
@@ -59,60 +58,33 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 		TestBeanHelper.prepare(this);
 		JMeterVariables variables = getThreadContext().getVariables();
 		
-//		String clientTypeVal = getClientTypeValue();
-//		int clientTypeInt = FlumeConfigBeanInfo.getClientTypeValueAsInt(clientTypeVal);
-//		
-//		switch (clientTypeInt) {
-//		
-//		case FlumeConfigBeanInfo.AVRO_RPC:
-//			LOGGER.info("AVRO RPC");
-//			break;
-//		case FlumeConfigBeanInfo.FAILOVER_RPC:
-//			LOGGER.info("FAILOVER RPC");
-//			break;
-//		case FlumeConfigBeanInfo.THRIFT_RPC:
-//			LOGGER.info("THRIFT RPC");
-//			break;
-//		case FlumeConfigBeanInfo.LOADBALANCING_RPC:
-//			LOGGER.info("LB RPC");
-//			break;
-//		case FlumeConfigBeanInfo.THRIFT_SECURERPC:
-//			LOGGER.info("THRIFT SECURE RPC");
-//			break;
-//		default:
-//			LOGGER.info("AVRO RPC");
-//			break;
-//		}
+		String clientTypeVal = getClientTypeValue();
+		int clientTypeInt = FlumeConfigBeanInfo.getClientTypeValueAsInt(clientTypeVal);
 		
+		switch (clientTypeInt) {
 		
-		if (variables.getObject(FLUME_CLIENT) != null) {
-			LOGGER.error("Flume Client connection is already established..");
-		} else {
-			synchronized (this) {
-				try {
-					Properties props = new Properties();
-
-					//props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, getKafkaBrokers());
-
-					LOGGER.debug("Additional Cofig Size::: " + getExtraConfigs().size());
-					if (getExtraConfigs().size() >= 1) {
-						LOGGER.info("Setting up Additional properties");
-						for (int i=0; i<getExtraConfigs().size(); i++) {
-							props.put(getExtraConfigs().get(i).getConfigKey(), getExtraConfigs().get(i).getConfigValue());
-							LOGGER.debug(String.format("Adding property : %s", getExtraConfigs().get(i).getConfigKey()));
-						}
-					}
-
-					//kafkaProducer = new KafkaProducer<String, Object>(props);
-
-					//variables.putObject(FLUME_CLIENT, FlumeClients.getClientObject(clientType));
-					LOGGER.info("Flume client successfully Initialized");
-				} catch (Exception e) {
-					LOGGER.error("Error occured while establishing connection with flume agents!!");
-					e.printStackTrace();
-				}
-			}
+		case FlumeConfigBeanInfo.AVRO_RPC:
+			LOGGER.info("AVRO RPC");
+			break;
+		case FlumeConfigBeanInfo.FAILOVER_RPC:
+			LOGGER.info("FAILOVER RPC");
+			break;
+		case FlumeConfigBeanInfo.THRIFT_RPC:
+			LOGGER.info("THRIFT RPC");
+			break;
+		case FlumeConfigBeanInfo.LOADBALANCING_RPC:
+			LOGGER.info("LB RPC");
+			break;
+		case FlumeConfigBeanInfo.THRIFT_SECURERPC:
+			LOGGER.info("THRIFT SECURE RPC");
+			break;
+		default:
+			LOGGER.info("AVRO RPC");
+			break;
 		}
+		
+		
+	
 		
 	}
 
@@ -185,3 +157,35 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 	}
 
 }
+
+
+/*
+  	if (variables.getObject(FLUME_CLIENT) != null) {
+			LOGGER.error("Flume Client connection is already established..");
+		} else {
+			synchronized (this) {
+				try {
+					Properties props = new Properties();
+
+					//props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, getKafkaBrokers());
+
+					LOGGER.debug("Additional Cofig Size::: " + getExtraConfigs().size());
+					if (getExtraConfigs().size() >= 1) {
+						LOGGER.info("Setting up Additional properties");
+						for (int i=0; i<getExtraConfigs().size(); i++) {
+							props.put(getExtraConfigs().get(i).getConfigKey(), getExtraConfigs().get(i).getConfigValue());
+							LOGGER.debug(String.format("Adding property : %s", getExtraConfigs().get(i).getConfigKey()));
+						}
+					}
+
+					//kafkaProducer = new KafkaProducer<String, Object>(props);
+
+					//variables.putObject(FLUME_CLIENT, FlumeClients.getClientObject(clientType));
+					LOGGER.info("Flume client successfully Initialized");
+				} catch (Exception e) {
+					LOGGER.error("Error occured while establishing connection with flume agents!!");
+					e.printStackTrace();
+				}
+			}
+		}
+		*/
