@@ -23,17 +23,15 @@ public class FlumeConfigBeanInfo extends BeanInfoSupport {
 	private static final String CONN_TIMEOUT= "connectTimeout";
 	private static final String REQ_TIMEOUT="requestTimeout";
 
-	private static final String[] CLIENTTYPEVALUE_TAGS = new String[5];
+	private static final String[] CLIENTTYPEVALUE_TAGS = new String[4];
 	static final int AVRO_RPC = 0;
 	static final int THRIFT_RPC = 1;
-	static final int THRIFT_SECURERPC = 2;
-	static final int FAILOVER_RPC = 3;
-	static final int LOADBALANCING_RPC = 4;
+	static final int FAILOVER_RPC = 2;
+	static final int LOADBALANCING_RPC = 3;
 	
 	static {
 		CLIENTTYPEVALUE_TAGS[AVRO_RPC] = "clientTypeValue.avroRpc";
 		CLIENTTYPEVALUE_TAGS[THRIFT_RPC] = "clientTypeValue.thriftRpc";
-		CLIENTTYPEVALUE_TAGS[THRIFT_SECURERPC] = "clientTypeValue.thriftSecureRpc";
 		CLIENTTYPEVALUE_TAGS[FAILOVER_RPC] = "clientTypeValue.failoverRpc";
 		CLIENTTYPEVALUE_TAGS[LOADBALANCING_RPC] = "clientTypeValue.loadbalancingRpc";
 	}

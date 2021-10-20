@@ -20,7 +20,10 @@ package io.perfwise.flume.config;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.flume.api.RpcClient;
+import org.apache.flume.api.RpcClientConfigurationConstants;
 import org.apache.jmeter.config.ConfigElement;
 import org.apache.jmeter.config.ConfigTestElement;
 import org.apache.jmeter.testbeans.TestBean;
@@ -46,6 +49,7 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 	private List<VariableSettings> extraConfigs;
 
 	private static final String FLUME_CLIENT = "flumeClient";
+	private static RpcClient client;
 
 	@Override
 	public void addConfigElement(ConfigElement config) {
@@ -61,32 +65,62 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 		String clientTypeVal = getClientTypeValue();
 		int clientTypeInt = FlumeConfigBeanInfo.getClientTypeValueAsInt(clientTypeVal);
 		
-		switch (clientTypeInt) {
-		
-		case FlumeConfigBeanInfo.AVRO_RPC:
-			LOGGER.info("AVRO RPC");
-			break;
-		case FlumeConfigBeanInfo.FAILOVER_RPC:
-			LOGGER.info("FAILOVER RPC");
-			break;
-		case FlumeConfigBeanInfo.THRIFT_RPC:
-			LOGGER.info("THRIFT RPC");
-			break;
-		case FlumeConfigBeanInfo.LOADBALANCING_RPC:
-			LOGGER.info("LB RPC");
-			break;
-		case FlumeConfigBeanInfo.THRIFT_SECURERPC:
-			LOGGER.info("THRIFT SECURE RPC");
-			break;
-		default:
-			LOGGER.info("AVRO RPC");
-			break;
+		if (variables.getObject(FLUME_CLIENT) != null) {
+			LOGGER.error("Flume Client connection is already established..");
+		} else {
+			synchronized (this) {
+				try {
+					Properties props = new Properties();
+					props.put(RpcClientConfigurationConstants.CONFIG_BATCH_SIZE, getBatchSize());
+					props.put(RpcClientConfigurationConstants.CONFIG_CONNECT_TIMEOUT, getConnectTimeout());
+					props.put(RpcClientConfigurationConstants.CONFIG_REQUEST_TIMEOUT, getRequestTimeout());
+					
+					LOGGER.debug("Additional Cofig Size::: " + getExtraConfigs().size());
+					if (getExtraConfigs().size() >= 1) {
+						LOGGER.info("Setting up Additional properties");
+						for (int i=0; i<getExtraConfigs().size(); i++) {
+							props.put(getExtraConfigs().get(i).getConfigKey(), getExtraConfigs().get(i).getConfigValue());
+							LOGGER.debug(String.format("Adding property : %s", getExtraConfigs().get(i).getConfigKey()));
+						}
+					}
+					
+					switch (clientTypeInt) {
+					
+					case FlumeConfigBeanInfo.AVRO_RPC:
+						LOGGER.info("AVRO RPC");
+						client = FlumeClients.getAvroRpcClient(flumeAgentHosts, props);
+						break;
+					case FlumeConfigBeanInfo.FAILOVER_RPC:
+						client = FlumeClients.getFailoverRpcClient(flumeAgentHosts, props);
+						LOGGER.info("FAILOVER RPC");
+						break;
+					case FlumeConfigBeanInfo.THRIFT_RPC:
+						client = FlumeClients.getThriftRpcClient(flumeAgentHosts, props);
+						LOGGER.info("THRIFT RPC");
+						break;
+					case FlumeConfigBeanInfo.LOADBALANCING_RPC:
+						client = FlumeClients.getLoadbalancingRpcClient(flumeAgentHosts, props);
+						LOGGER.info("LB RPC");
+						break;
+					default:
+						LOGGER.info("Invalid Client Selected - Please check the Flume Config Element in JMeter");
+						LOGGER.info("Aborting Test..");
+						testEnded();
+						break;
+					}
+
+					variables.putObject(FLUME_CLIENT, client);
+					LOGGER.info("Apache Flume Client Initialized Successfully !");
+				} catch (Exception e) {
+					LOGGER.error("Error occured while establishing connection with Flume agents!!");
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		
-	
-		
 	}
+	
 
 	@Override
 	public void testStarted(String host) {
@@ -96,8 +130,7 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 
 	@Override
 	public void testEnded() {
-		// TODO Auto-generated method stub
-
+		client.close();
 	}
 
 	@Override
@@ -159,33 +192,3 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 }
 
 
-/*
-  	if (variables.getObject(FLUME_CLIENT) != null) {
-			LOGGER.error("Flume Client connection is already established..");
-		} else {
-			synchronized (this) {
-				try {
-					Properties props = new Properties();
-
-					//props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, getKafkaBrokers());
-
-					LOGGER.debug("Additional Cofig Size::: " + getExtraConfigs().size());
-					if (getExtraConfigs().size() >= 1) {
-						LOGGER.info("Setting up Additional properties");
-						for (int i=0; i<getExtraConfigs().size(); i++) {
-							props.put(getExtraConfigs().get(i).getConfigKey(), getExtraConfigs().get(i).getConfigValue());
-							LOGGER.debug(String.format("Adding property : %s", getExtraConfigs().get(i).getConfigKey()));
-						}
-					}
-
-					//kafkaProducer = new KafkaProducer<String, Object>(props);
-
-					//variables.putObject(FLUME_CLIENT, FlumeClients.getClientObject(clientType));
-					LOGGER.info("Flume client successfully Initialized");
-				} catch (Exception e) {
-					LOGGER.error("Error occured while establishing connection with flume agents!!");
-					e.printStackTrace();
-				}
-			}
-		}
-		*/
