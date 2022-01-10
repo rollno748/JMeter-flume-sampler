@@ -45,6 +45,7 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 	private transient String batchSize;
 	private transient String connectTimeout;
 	private transient String requestTimeout;
+	private static int maxIOWorker = Runtime.getRuntime().availableProcessors() * 2;
 
 	private List<VariableSettings> extraConfigs;
 
@@ -61,45 +62,50 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 		this.setRunningVersion(true);
 		TestBeanHelper.prepare(this);
 		JMeterVariables variables = getThreadContext().getVariables();
-		
-		String clientTypeVal = getClientTypeValue();
-		int clientTypeInt = FlumeConfigBeanInfo.getClientTypeValueAsInt(clientTypeVal);
-		
+
+		int clientTypeInt = FlumeConfigBeanInfo.getClientTypeValueAsInt(getClientTypeValue());
+
 		if (variables.getObject(FLUME_CLIENT) != null) {
 			LOGGER.error("Flume Client connection is already established..");
 		} else {
 			synchronized (this) {
 				try {
-					Properties props = new Properties();
+
+					final String[] hostLists = getFlumeAgentHosts().split(",");
+					Properties props = setflumeHosts(hostLists);
+
+					props.put(RpcClientConfigurationConstants.MAX_IO_WORKERS, String.valueOf(maxIOWorker));
 					props.put(RpcClientConfigurationConstants.CONFIG_BATCH_SIZE, getBatchSize());
 					props.put(RpcClientConfigurationConstants.CONFIG_CONNECT_TIMEOUT, getConnectTimeout());
 					props.put(RpcClientConfigurationConstants.CONFIG_REQUEST_TIMEOUT, getRequestTimeout());
-					
+
 					LOGGER.debug("Additional Cofig Size::: " + getExtraConfigs().size());
 					if (getExtraConfigs().size() >= 1) {
 						LOGGER.info("Setting up Additional properties");
-						for (int i=0; i<getExtraConfigs().size(); i++) {
-							props.put(getExtraConfigs().get(i).getConfigKey(), getExtraConfigs().get(i).getConfigValue());
-							LOGGER.debug(String.format("Adding property : %s", getExtraConfigs().get(i).getConfigKey()));
+						for (int i = 0; i < getExtraConfigs().size(); i++) {
+							props.put(getExtraConfigs().get(i).getConfigKey(),
+									getExtraConfigs().get(i).getConfigValue());
+							LOGGER.debug(
+									String.format("Adding property : %s", getExtraConfigs().get(i).getConfigKey()));
 						}
 					}
-					
+
 					switch (clientTypeInt) {
-					
+
 					case FlumeConfigBeanInfo.AVRO_RPC:
 						LOGGER.info("AVRO RPC");
-						client = FlumeClients.getAvroRpcClient(flumeAgentHosts, props);
+						client = FlumeClients.getAvroRpcClient(props);
 						break;
 					case FlumeConfigBeanInfo.FAILOVER_RPC:
-						client = FlumeClients.getFailoverRpcClient(flumeAgentHosts, props);
+						client = FlumeClients.getFailoverRpcClient(props);
 						LOGGER.info("FAILOVER RPC");
 						break;
 					case FlumeConfigBeanInfo.THRIFT_RPC:
-						client = FlumeClients.getThriftRpcClient(flumeAgentHosts, props);
+						client = FlumeClients.getThriftRpcClient(props);
 						LOGGER.info("THRIFT RPC");
 						break;
 					case FlumeConfigBeanInfo.LOADBALANCING_RPC:
-						client = FlumeClients.getLoadbalancingRpcClient(flumeAgentHosts, props);
+						client = FlumeClients.getLoadbalancingRpcClient(props);
 						LOGGER.info("LB RPC");
 						break;
 					default:
@@ -117,10 +123,8 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 				}
 			}
 		}
-		
-		
+
 	}
-	
 
 	@Override
 	public void testStarted(String host) {
@@ -137,6 +141,20 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 	public void testEnded(String host) {
 		testEnded();
 
+	}
+
+	public Properties setflumeHosts(String[] hostsLists) {
+		Properties props = new Properties();
+
+		if (hostsLists.length > 1) {
+			for (int i = 1; i <= hostsLists.length; i++) {
+				final String idx = "h" + i;
+				final String hostURI = hostsLists[i - 1];
+				props.setProperty("hosts." + idx, hostURI);
+			}
+		}
+		props.setProperty(RpcClientConfigurationConstants.CONFIG_HOSTS, hostsLists[0]);
+		return props;
 	}
 
 	// Getters and setters
@@ -190,5 +208,3 @@ public class FlumeConfig extends ConfigTestElement implements ConfigElement, Tes
 	}
 
 }
-
-

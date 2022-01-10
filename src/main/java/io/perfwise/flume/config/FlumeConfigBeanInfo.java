@@ -47,7 +47,7 @@ public class FlumeConfigBeanInfo extends BeanInfoSupport {
 
 		PropertyDescriptor propDesc = property(FLUME_HOSTS);
 		propDesc.setValue(NOT_UNDEFINED, Boolean.TRUE);
-		propDesc.setValue(DEFAULT, "localhost:9091");
+		propDesc.setValue(DEFAULT, "localhost1:9091,localhost2:9091");
 		propDesc.setDisplayName("Flume Hosts");
 		propDesc.setShortDescription("List of Flume Agents/Hosts - comma separated");
 
@@ -56,20 +56,20 @@ public class FlumeConfigBeanInfo extends BeanInfoSupport {
 		propDesc.setValue(NOT_UNDEFINED, Boolean.TRUE);
 		propDesc.setValue(DEFAULT, "1");
 		propDesc.setDisplayName("Batch Size");
-		propDesc.setShortDescription("Batch Size");
+		propDesc.setShortDescription("Batch Size - Defaults to 100 but recommended to set to 1 for load testing");
 
 		propDesc = property(CONN_TIMEOUT);
 		propDesc.setValue(NOT_UNDEFINED, Boolean.TRUE);
-		propDesc.setValue(DEFAULT, "");
+		propDesc.setValue(DEFAULT, "20");
 		propDesc.setDisplayName("Connection Timeout");
-		propDesc.setShortDescription("Timeout Setting for Connection");
+		propDesc.setShortDescription("Timeout Setting for Connection - Defaults to 20 sec");
 
 
 		propDesc = property(REQ_TIMEOUT);
 		propDesc.setValue(NOT_UNDEFINED, Boolean.TRUE);
-		propDesc.setValue(DEFAULT, "");
+		propDesc.setValue(DEFAULT, "20");
 		propDesc.setDisplayName("Request Timeout");
-		propDesc.setShortDescription("Request Setting for Connection");
+		propDesc.setShortDescription("Request Setting for Connection - Defaults to 20 sec");
 		
 		propDesc = property(CLIENTTYPE_VALUE, TypeEditor.ComboStringEditor);
 		propDesc.setValue(RESOURCE_BUNDLE, getBeanDescriptor().getValue(RESOURCE_BUNDLE));
